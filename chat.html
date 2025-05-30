@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en"> 
+ <head> 
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title> ChatBot</title> 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css"> 
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script> 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"> 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> 
+  <style>
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      padding: 20px 0;
+    }
+    
+    .container {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      max-width: 800px;
+    }
+    
+    h2 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 30px;
+      font-weight: bold;
+      background: linear-gradient(90deg, #ff8a00, #e52e71);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .input-group {
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    
+    #userInput {
+      border: none;
+      padding: 15px;
+      font-size: 16px;
+      border-radius: 10px 0 0 10px !important;
+    }
+    
+    #userInput:focus {
+      box-shadow: none;
+      border-color: #ddd;
+    }
+    
+    /* Advanced Gradient Button */
+    .custom-btn {
+      background: linear-gradient(45deg, #000000, #434343);
+      color: white;
+      border: none;
+      padding: 0 25px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 0 10px 10px 0 !important;
+      transition: all 0.4s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .custom-btn:hover {
+      background: linear-gradient(45deg, #434343, #000000);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .custom-btn:active {
+      transform: translateY(0);
+    }
+    
+    .custom-btn::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: rgba(255, 255, 255, 0.1);
+      transform: rotate(45deg);
+      transition: all 0.6s ease;
+    }
+    
+    .custom-btn:hover::after {
+      left: 100%;
+    }
+    
+    /* Response Area - Removed the pink left border */
+    #response {
+      margin-top: 20px;
+      min-height: 50px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      animation: fadeIn 0.5s ease;
+      overflow: hidden;
+    }
+    
+    .response-content {
+      padding: 20px;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    #response h3 {
+      color: #333;
+      font-size: 1.2em;
+    }
+    
+    #response strong {
+      color: #e52e71;
+    }
+    
+    #response ul {
+      padding-left: 20px;
+    }
+    
+    #response li {
+      margin-bottom: 5px;
+    }
+    
+    /* Typing animation */
+    .typing {
+      display: inline-block;
+      padding: 20px;
+    }
+    
+    .typing-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #e52e71;
+      margin-right: 3px;
+      animation: typingAnimation 1.4s infinite ease-in-out;
+    }
+    
+    .typing-dot:nth-child(1) {
+      animation-delay: 0s;
+    }
+    
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+      margin-right: 0;
+    }
+    
+    @keyframes typingAnimation {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-5px); }
+    }
+    
+    /* Typewriter effect */
+    .typewriter {
+      border-right: 2px solid #e52e71;
+      white-space: pre-wrap;
+      overflow: hidden;
+      display: inline-block;
+    }
+    
+    /* Copy button */
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #f0f0f0;
+      border: none;
+      border-radius: 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      opacity: 0.7;
+      font-size: 12px;
+    }
+    
+    .copy-btn:hover {
+      background: #e52e71;
+      color: white;
+      opacity: 1;
+    }
+    
+    .response-container {
+      position: relative;
+    }
+    
+    pre {
+      position: relative;
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 576px) {
+      .container {
+        padding: 20px;
+      }
+      
+      #userInput {
+        padding: 12px;
+      }
+      
+      .custom-btn {
+        padding: 0 15px;
+      }
+    }
+  </style> 
+ </head> 
+ <body> 
+  <div class="container animate__animated animate__fadeIn"> 
+   <h2 class="animate__animated animate__fadeInDown"> ChatBot</h2> 
+   <div class="input-group"> 
+    <input type="text" class="form-control" id="userInput" placeholder="Ask me anything..."> 
+    <div class="input-group-append"> <button class="custom-btn" onclick="sendMessage()" id="askButton"> <span id="buttonText">Ask</span> </button> 
+    </div> 
+   </div> 
+   <div id="response"></div> 
+  </div> 
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById('userInput').value;
+      const responseDiv = document.getElementById('response');
+      const button = document.getElementById('askButton');
+      const buttonText = document.getElementById('buttonText');
+
+      if (!input) {
+        responseDiv.innerHTML = '<div class="alert alert-warning">Please enter a message.</div>';
+        responseDiv.classList.add('animate__animated', 'animate__headShake');
+        setTimeout(() => {
+          responseDiv.classList.remove('animate__animated', 'animate__headShake');
+        }, 1000);
+        return;
+      }
+
+      // Show loading state
+      button.disabled = true;
+      buttonText.innerHTML = 'Asking...';
+      button.style.background = 'linear-gradient(45deg, #555555, #333333)';
+      
+      responseDiv.innerHTML = `
+        <div class="typing">
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+          <span class="typing-dot"></span>
+        </div>
+      `;
+      responseDiv.classList.add('animate__animated', 'animate__fadeIn');
+
+      try {
+        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": "Bearer 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",  // <-- Replace with your API key
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://yourdomain.com",  // Optional
+            "X-Title": "WSP ChatBot"  // Optional
+          },
+          body: JSON.stringify({
+            model: "deepseek/deepseek-r1:free",
+            messages: [{ role: "user", content: input }]
+          })
+        });
+
+        const data = await response.json();
+        const markdownText = data.choices?.[0]?.message?.content || 'No response received.';
+        
+        // Convert markdown to HTML
+        const htmlResponse = marked.parse(markdownText);
+        
+        // Create container for response
+        responseDiv.innerHTML = `
+          <div class="response-container">
+            <div class="response-content" id="responseContent"></div>
+          </div>
+        `;
+        
+        // Display with typewriter effect
+        typeWriterEffect(document.getElementById('responseContent'), htmlResponse);
+        
+        // Add copy buttons to all code blocks after typing completes
+        setTimeout(() => {
+          addCopyButtons();
+        }, htmlResponse.length * 10 + 1000); // Wait for typing to complete
+        
+      } catch (error) {
+        responseDiv.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+        responseDiv.classList.add('animate__animated', 'animate__shakeX');
+      } finally {
+        // Reset button state
+        button.disabled = false;
+        buttonText.innerHTML = 'Ask';
+        button.style.background = 'linear-gradient(45deg, #000000, #434343)';
+      }
+    }
+
+    // Typewriter effect function
+    function typeWriterEffect(element, text, speed = 1) {
+      let i = 0;
+      element.innerHTML = '<span class="typewriter"></span>';
+      const typewriterSpan = element.querySelector('.typewriter');
+      
+      function type() {
+        if (i < text.length) {
+          // Add the next character
+          typewriterSpan.innerHTML = text.substring(0, i + 1);
+          
+          // Scroll to bottom
+          element.scrollTop = element.scrollHeight;
+          
+          i++;
+          setTimeout(type, speed);
+        } else {
+          // Remove the cursor when done
+          typewriterSpan.classList.remove('typewriter');
+        }
+      }
+      
+      type();
+    }
+
+    // Add copy buttons to code blocks
+    function addCopyButtons() {
+      const codeBlocks = document.querySelectorAll('pre');
+      
+      codeBlocks.forEach((block) => {
+        // Create copy button
+        const copyButton = document.createElement('button');
+        copyButton.className = 'copy-btn';
+        copyButton.innerHTML = '<i class="fas fa-copy"></i> Copy';
+        copyButton.title = 'Copy to clipboard';
+        
+        // Position button
+        block.style.position = 'relative';
+        block.appendChild(copyButton);
+        
+        // Add click event
+        copyButton.addEventListener('click', () => {
+          const code = block.querySelector('code') ? block.querySelector('code').innerText : block.innerText;
+          navigator.clipboard.writeText(code).then(() => {
+            copyButton.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            setTimeout(() => {
+              copyButton.innerHTML = '<i class="fas fa-copy"></i> Copy';
+            }, 2000);
+          });
+        });
+      });
+    }
+
+    // Add event listener for Enter key
+    document.getElementById('userInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+  </script> 
+ 
+</body></html>
